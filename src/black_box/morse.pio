@@ -1,0 +1,23 @@
+.program morse
+.wrap_target
+    pull block
+    out y, 32
+    pull block
+    out x, 32
+    set pins, 1
+on_loop:
+    jmp y-- on_loop
+    set pins, 0
+off_loop:
+    jmp x-- off_loop
+.wrap
+
+% c-sdk {
+void morse_program_init(PIO pio, uint sm, uint offset, uint pin) {
+   pio_gpio_init(pio, pin);
+   pio_sm_set_consecutive_pindirs(pio, sm, pin, 1, true);
+   pio_sm_config c = morse_program_get_default_config(offset);
+   sm_config_set_set_pins(&c, pin, 1);
+   pio_sm_init(pio, sm, offset, &c);
+}
+%}
